@@ -1,6 +1,38 @@
-composer.phar
+# Composer
 /vendor/
+composer.phar
 
-# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
-# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-# composer.lock
+# Environment
+.env
+.env.*
+
+# Cache
+/cache/*
+!/cache/.gitkeep
+
+# Logs
+*.log
+
+# Storage
+/storage/hasil-foto/*
+/storage/bukti-transfer/*
+/storage/upload-pelanggan/*
+/storage/temp/*
+/storage/logs/*
+
+!storage/hasil-foto/.gitkeep
+!storage/bukti-transfer/.gitkeep
+!storage/upload-pelanggan/.gitkeep
+!storage/temp/.gitkeep
+!storage/logs/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
