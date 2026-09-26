@@ -1,333 +1,446 @@
-# PANDUAN SETUP ENVIRONMENT — SIMASIF
+# PANDUAN SETUP - WINDOWS
 
-Panduan ini untuk semua anggota tim yang baru pertama kali setup project ini di laptop masing-masing. Ikuti berurutan, jangan loncat.
+## Untuk Tim SIMASIF (Ayu, Rayyan, Rivaldo)
 
-**Tim ini pakai OS campuran:**
-- **Ibrahim** → Ubuntu/Linux
-- **Ayu, Rayyan, Rivaldo** → Windows
+Cara pakai panduan ini: setiap bagian punya 3 kemungkinan jalur. Cek dulu status kalian, baru ikuti jalur yang sesuai.
 
-Ikuti bagian sesuai OS kalian masing-masing. Struktur project, `.env`, dan kode PHP-nya **sama persis** untuk semua OS — yang beda cuma cara install software & setup server lokalnya.
+Alur pengambilan keputusan:
+- Kalau alat/komponen belum ter-install sama sekali, ikuti "Jalur A: Install dari Awal".
+- Kalau alat/komponen sudah ter-install tapi belum di-setup untuk project ini, ikuti "Jalur B: Setup".
+- Kalau alat/komponen sudah ter-install dan sudah pernah di-setup, ikuti "Jalur C: Verifikasi". Kalau hasil verifikasi sudah sesuai, lanjut ke bagian berikutnya. Kalau belum sesuai, kembali ke Jalur B untuk memperbaiki setup-nya.
+
+Jangan lewati langkah "cek" walaupun kalian merasa yakin sudah pernah setup sebelumnya. Sering ada detail kecil yang berbeda dari yang dibutuhkan project ini (misalnya versi PHP, nama user database, atau path folder).
 
 ---
 
-## 1. Install Software yang Dibutuhkan
+## BAGIAN 1 - Git dan GitHub
 
-### Windows (pakai Laragon — direkomendasikan)
+### Cek
 
-1. Download **Laragon Full** dari [laragon.org/download](https://laragon.org/download/) — sudah termasuk Apache, PHP, dan Composer sekaligus
-2. Install seperti biasa (Next-Next-Finish), biarkan lokasi default `C:\laragon`
-3. **PostgreSQL tidak termasuk di Laragon**, install terpisah:
-   - Download dari [postgresql.org/download/windows](https://www.postgresql.org/download/windows/)
-   - Jalankan installer, **catat password superuser (`postgres`)** yang kalian buat saat instalasi — jangan sampai lupa
-   - Biarkan port default `5432`
-   - Centang **pgAdmin 4** saat instalasi (GUI untuk lihat database)
-4. Setelah Laragon terbuka, klik menu **PHP** di sidebar kiri → pastikan versi PHP ≥ 8.1 dipilih
-5. Aktifkan extension PostgreSQL di PHP:
-   - Klik kanan ikon Laragon di tray → **PHP** → **php.ini**
-   - Cari baris berikut, hapus tanda `;` di depannya kalau masih ada:
-     ```ini
-     extension=pdo_pgsql
-     extension=pgsql
-     ```
-   - Simpan, lalu restart Laragon (klik **Stop All** → **Start All**)
+Buka Command Prompt atau PowerShell, ketik perintah berikut satu per satu:
 
-**Cek semua terinstall dengan benar** (buka **Terminal** dari Laragon: klik kanan ikon Laragon → Terminal):
-```bash
+```
+git --version
+git config --global user.name
+git config --global user.email
+```
+
+Tentukan jalur berdasarkan hasil:
+- Kalau `git --version` menampilkan pesan error seperti "not recognized", berarti Git belum ter-install. Lanjut ke Jalur A.
+- Kalau versi Git muncul dengan benar tapi `user.name` atau `user.email` tidak menampilkan apa-apa, berarti Git sudah ter-install tapi identitasnya belum di-setup. Lanjut ke Jalur B.
+- Kalau semua perintah di atas menampilkan hasil dengan benar, lanjut ke Jalur C untuk verifikasi.
+
+### Jalur A - Install dari Awal
+
+1. Download Git dari https://git-scm.com/download/win
+2. Jalankan file installer yang sudah didownload
+3. Selama proses instalasi, biarkan semua opsi dalam keadaan default, cukup klik Next secara berurutan sampai muncul tombol Install, lalu klik Install
+4. Setelah instalasi selesai, lanjutkan ke Jalur B di bawah ini untuk melakukan setup identitas
+
+### Jalur B - Setup
+
+Jalankan perintah berikut untuk mengatur identitas Git (ganti dengan nama dan email akun GitHub kalian masing-masing):
+
+```
+git config --global user.name "Nama Kamu"
+git config --global user.email "email_github_kamu@gmail.com"
+```
+
+Setelah itu, periksa dua hal berikut terkait akun GitHub:
+
+Pertama, periksa apakah kalian sudah punya akun GitHub dan sudah menerima undangan sebagai collaborator di repository SIMASIF dari Ibrahim.
+- Kalau belum punya akun GitHub, daftar terlebih dahulu di https://github.com/signup
+- Kalau sudah punya akun tapi belum menerima undangan, periksa email atau buka https://github.com/notifications, lalu klik Accept invitation pada undangan yang muncul
+
+Kedua, periksa apakah kalian sudah memiliki Personal Access Token untuk laptop yang sedang digunakan ini. Token ini diperlukan karena GitHub tidak lagi menerima password akun biasa saat melakukan git clone atau git push dari terminal.
+- Kalau belum punya, buat token baru dengan langkah berikut:
+  1. Buka https://github.com/settings/tokens
+  2. Klik Generate new token, lalu pilih Generate new token (classic)
+  3. Isi kolom Note dengan teks seperti "SIMASIF Laptop [Nama Kamu]"
+  4. Pilih Expiration sesuai preferensi, misalnya 90 days atau No expiration
+  5. Centang kotak scope bernama repo
+  6. Klik Generate token di bagian bawah halaman
+  7. Salin token yang muncul (formatnya diawali ghp_) dan simpan sementara di Notepad. Token ini hanya ditampilkan satu kali saja, jadi pastikan tersimpan dengan aman sebelum menutup halaman tersebut
+
+### Jalur C - Verifikasi
+
+Cocokkan hasil dari ketiga perintah berikut:
+
+```
+git --version
+git config --global user.name
+git config --global user.email
+```
+
+Pastikan nama dan email yang muncul memang benar akun GitHub kalian yang sudah menjadi collaborator di repository SIMASIF. Kalau ternyata berbeda akun atau ada kesalahan, ulangi langkah-langkah di Jalur B.
+
+Kalau semua sudah sesuai, lanjutkan ke Bagian 2.
+
+---
+
+## BAGIAN 2 - Laragon (PHP, Apache, dan Composer)
+
+### Cek
+
+Buka Terminal Laragon (kalau Laragon sudah ter-install, klik kanan ikon Laragon lalu pilih Terminal). Kalau Laragon belum ter-install sama sekali, buka Command Prompt biasa terlebih dahulu, lalu jalankan:
+
+```
 php -v
 composer -V
-psql --version
-git --version
+```
+
+Tentukan jalur berdasarkan hasil:
+- Kalau kedua perintah menampilkan pesan error "not recognized", atau Laragon memang belum ter-install sama sekali, lanjut ke Jalur A.
+- Kalau Laragon sudah ter-install tapi versi PHP yang tampil di bawah 8.1, atau Composer belum tersedia, lanjut ke Jalur B.
+- Kalau versi PHP sudah 8.1 ke atas dan Composer sudah tersedia, lanjut ke Jalur C untuk verifikasi lebih detail.
+
+### Jalur A - Install dari Awal
+
+1. Download Laragon versi Full (bukan versi Lite) dari https://laragon.org/download/
+2. Jalankan file installer, biarkan lokasi instalasi dalam keadaan default yaitu di C:\laragon
+3. Selesaikan proses instalasi sampai selesai
+4. Buka aplikasi Laragon, klik tombol Start All
+5. Setelah itu, lanjutkan ke Jalur B untuk memastikan versi PHP dan Composer sudah sesuai kebutuhan
+
+### Jalur B - Setup
+
+Kalau versi PHP masih di bawah 8.1, lakukan langkah berikut:
+1. Klik kanan ikon Laragon di system tray (pojok kanan bawah layar), lalu pilih PHP
+2. Periksa daftar versi PHP yang tersedia. Kalau versi 8.1 ke atas sudah ada di daftar, klik untuk memilih dan mengaktifkannya
+3. Kalau versi yang dibutuhkan belum tersedia di daftar, klik PHP, lalu pilih Download more, kemudian pilih versi 8.1 ke atas dan tunggu proses download selesai, setelah itu aktifkan versi tersebut
+
+Kalau Composer belum tersedia, lakukan langkah berikut:
+1. Download installer Composer dari https://getcomposer.org/Composer-Setup.exe
+2. Jalankan installer tersebut. Saat diminta memilih lokasi PHP, arahkan ke folder PHP milik Laragon, biasanya berlokasi di C:\laragon\bin\php\php-8.x.x\php.exe (sesuaikan angka versi dengan yang sedang aktif)
+3. Selesaikan proses instalasi, lalu tutup dan buka kembali terminal, kemudian periksa ulang dengan mengetik composer -V
+
+Setelah PHP dan Composer selesai disetel, restart Laragon dengan klik Stop All kemudian Start All, lalu lanjutkan ke Jalur C untuk memverifikasi ekstensi PHP yang dibutuhkan.
+
+### Jalur C - Verifikasi
+
+Jalankan tiga perintah berikut:
+
+```
+php -v
+composer -V
 php -m | findstr pgsql
 ```
-Baris terakhir harus menampilkan `pdo_pgsql` dan `pgsql`.
 
-**Kalau Composer & Git belum ada** (Laragon kadang tidak bundling keduanya):
-- Composer: download installer dari [getcomposer.org](https://getcomposer.org/Composer-Setup.exe)
-- Git: download dari [git-scm.com/download/win](https://git-scm.com/download/win)
+Periksa tiga hal berikut:
+1. Apakah versi PHP yang tampil sudah 8.1 ke atas
+2. Apakah versi Composer 2.x muncul dengan benar
+3. Apakah perintah ketiga menampilkan dua baris hasil, yaitu pdo_pgsql dan pgsql
 
-Set identitas Git (buka Git Bash atau terminal Laragon):
-```bash
-git config --global user.name "Nama Kamu"
-git config --global user.email "email@kamu.com"
-```
+Kalau poin ketiga tidak menampilkan hasil apa pun (artinya ekstensi belum aktif), lakukan langkah berikut:
+1. Klik kanan ikon Laragon di system tray, pilih PHP, lalu pilih php.ini
+2. File php.ini akan terbuka di text editor. Gunakan Ctrl+F untuk mencari baris `;extension=pdo_pgsql` dan baris `;extension=pgsql`
+3. Hapus tanda titik koma (;) di depan kedua baris tersebut, lalu simpan file
+4. Restart Laragon dengan klik Stop All kemudian Start All
+5. Periksa ulang dengan menjalankan `php -m | findstr pgsql`
 
-### Ubuntu/Linux
-
-```bash
-sudo apt update && sudo apt upgrade -y
-
-# PHP + extension
-sudo apt install -y php php-cli php-pgsql php-pdo php-mbstring php-fileinfo php-xml php-curl php-zip
-
-# Apache
-sudo apt install -y apache2 libapache2-mod-php
-
-# PostgreSQL
-sudo apt install -y postgresql postgresql-contrib
-
-# Composer & Git
-sudo apt install -y composer git
-```
-
-Cek instalasi:
-```bash
-php -v && composer -V && psql --version && git --version && apache2 -v
-php -m | grep pgsql
-```
-
-Set identitas Git:
-```bash
-git config --global user.name "Nama Kamu"
-git config --global user.email "email@kamu.com"
-```
+Kalau ketiga hal di atas sudah sesuai, lanjutkan ke Bagian 3.
 
 ---
 
-## 2. Setup PostgreSQL
+## BAGIAN 3 - PostgreSQL
 
-### Windows
+### Cek
 
-1. Buka **pgAdmin 4** (sudah terinstall bareng PostgreSQL)
-2. Klik kiri **Servers** → **PostgreSQL** → masukkan password superuser yang tadi dibuat saat instalasi
-3. Klik kanan **Login/Group Roles** → **Create** → **Login/Group Role**
-   - Tab **General**: nama role → `simasif_user`
-   - Tab **Definition**: password → buat password sendiri, catat baik-baik
-   - Tab **Privileges**: aktifkan **Can login?**
-   - Klik **Save**
-4. Klik kanan **Databases** → **Create** → **Database**
-   - Database name: `simasif`
-   - Owner: pilih `simasif_user`
-   - Klik **Save**
+Jalankan perintah berikut:
 
-**Alternatif lewat Query Tool** (kalau lebih nyaman pakai SQL daripada klik-klik GUI): klik kanan **Databases** → **Query Tool**, lalu jalankan:
-```sql
-CREATE USER simasif_user WITH PASSWORD 'buat_password_sendiri';
-CREATE DATABASE simasif OWNER simasif_user;
-GRANT ALL PRIVILEGES ON DATABASE simasif TO simasif_user;
+```
+psql --version
 ```
 
-**Test koneksi** lewat terminal Laragon:
-```bash
-psql -U simasif_user -d simasif -h 127.0.0.1 -W
-```
-Kalau berhasil masuk ke prompt `simasif=>`, ketik `\q` untuk keluar.
+Tentukan jalur berdasarkan hasil:
+- Kalau muncul pesan error "not recognized", lanjut ke Jalur A.
+- Kalau versi PostgreSQL muncul dengan benar tapi kalian belum pernah membuat user dan database khusus untuk project ini, lanjut ke Jalur B.
+- Kalau kalian sudah pernah membuat user dan database untuk project ini sebelumnya, lanjut ke Jalur C untuk verifikasi.
 
-### Ubuntu/Linux
+Catatan: kalau perintah psql menampilkan error "not recognized" padahal PostgreSQL sebenarnya sudah ter-install, kemungkinan besar folder instalasinya belum ditambahkan ke Environment Variables (PATH). Cari lokasi folder instalasi PostgreSQL, biasanya di C:\Program Files\PostgreSQL\16\bin, lalu tambahkan ke PATH melalui pengaturan Environment Variables di Windows (cari "Edit environment variables" di Start Menu, lalu pilih Path pada bagian User variables, klik Edit, klik New, tempelkan path folder tadi, lalu klik OK pada semua jendela yang terbuka). Setelah itu, tutup dan buka kembali terminal sebelum mencoba lagi.
 
-```bash
-sudo systemctl status postgresql
-```
-Kalau belum jalan, cek nama cluster:
-```bash
-pg_lsclusters
-sudo systemctl start postgresql@18-main
-```
+### Jalur A - Install dari Awal
 
-Buat user & database:
-```bash
-sudo -u postgres psql
-```
-```sql
-CREATE USER simasif_user WITH PASSWORD 'buat_password_sendiri';
-CREATE DATABASE simasif OWNER simasif_user;
-GRANT ALL PRIVILEGES ON DATABASE simasif TO simasif_user;
-\q
-```
+1. Download installer dari https://www.postgresql.org/download/windows/, klik Download the installer, pilih versi 16 atau 17
+2. Jalankan installer tersebut dan ikuti wizard instalasi
+3. Saat diminta membuat password untuk user superuser bernama postgres, buat password tersebut dan catat baik-baik di Notepad
+4. Biarkan port dalam keadaan default yaitu 5432, dan locale juga biarkan default
+5. Di akhir instalasi akan muncul aplikasi bernama Stack Builder, aplikasi ini boleh ditutup atau dilewati karena tidak dibutuhkan
+6. Aplikasi pgAdmin 4 akan otomatis ikut ter-install bersamaan dengan PostgreSQL
+7. Setelah instalasi selesai, lanjutkan ke Jalur B untuk membuat user dan database khusus project ini
 
-Test koneksi:
-```bash
+### Jalur B - Setup
+
+1. Buka aplikasi pgAdmin 4 dari Start Menu
+2. Kalau diminta membuat Master Password untuk pgAdmin, buat password baru (password ini berbeda dari password PostgreSQL yang dibuat sebelumnya, ini khusus untuk membuka aplikasi pgAdmin)
+3. Pada panel sebelah kiri, klik Servers, lalu klik PostgreSQL. Kalian akan diminta memasukkan password, masukkan password user postgres yang dibuat saat instalasi
+4. Setelah terhubung, klik kanan pada Login/Group Roles, pilih Create, lalu pilih Login/Group Role
+   - Pada tab General, isi kolom Name dengan simasif_user
+   - Pada tab Definition, isi kolom Password dengan password bebas buatan sendiri, catat di Notepad
+   - Pada tab Privileges, aktifkan toggle Can login
+   - Klik Save
+5. Klik kanan pada Databases, pilih Create, lalu pilih Database
+   - Isi Database name dengan simasif
+   - Pada kolom Owner, pilih simasif_user dari daftar
+   - Klik Save
+
+### Jalur C - Verifikasi
+
+Jalankan perintah berikut:
+
+```
 psql -U simasif_user -d simasif -h 127.0.0.1 -W
 ```
 
+Masukkan password milik simasif_user yang dibuat sebelumnya. Kalau berhasil masuk dan muncul prompt bertuliskan simasif=>, berarti sudah berhasil. Ketik `\q` untuk keluar.
+
+Kalau proses ini gagal (misalnya password salah atau user/database tidak ditemukan), kembali ke Jalur B dan periksa kembali di pgAdmin apakah user dan database memang sudah benar-benar dibuat dengan nama yang tepat.
+
+Kalau berhasil terhubung, lanjutkan ke Bagian 4.
+
 ---
 
-## 3. Clone Repository
+## BAGIAN 4 - Clone Repository SIMASIF
 
-**Sama untuk semua OS.** Buka terminal (Windows: terminal Laragon atau Git Bash; Linux: terminal biasa):
+### Cek
 
-```bash
-git clone <URL_REPO_GITHUB_KALIAN>
-cd simasif
+Jalankan perintah berikut:
+
+```
+dir C:\laragon\www\simasif
 ```
 
-**Untuk Windows:** taruh folder hasil clone di `C:\laragon\www\simasif` — ini folder khusus Laragon yang otomatis dikenali sebagai web project.
+Tentukan jalur berdasarkan hasil:
+- Kalau muncul pesan "File Not Found" atau folder tersebut memang tidak ada, lanjut ke Jalur A.
+- Kalau folder tersebut ada tapi terlihat tidak lengkap, misalnya hanya berisi sebagian file saja, lanjut ke Jalur B.
+- Kalau folder tersebut sudah lengkap, lanjut ke Jalur C untuk verifikasi.
+
+### Jalur A - Clone dari Awal
+
+Buka Git Bash, lalu jalankan:
+
+```
+cd /c/laragon/www
+git clone https://github.com/mov1cc/SIMASIF.git simasif
+```
+
+Saat diminta Username, masukkan username GitHub kalian. Saat diminta Password, tempelkan Personal Access Token yang sudah dibuat pada Bagian 1, bukan password akun biasa.
+
+### Jalur B - Perbaiki Clone yang Bermasalah
+
+Kalau folder sudah ada tapi rusak atau tidak lengkap, hapus dulu folder tersebut secara keseluruhan (pastikan tidak ada pekerjaan penting yang belum di-push sebelum menghapus), lalu ulangi langkah pada Jalur A:
+
+```
+rm -rf /c/laragon/www/simasif
+```
+
+### Jalur C - Verifikasi
+
+Masuk ke folder project, lalu jalankan:
+
+```
+cd /c/laragon/www/simasif
+git status
+git remote -v
+```
+
+Pastikan hasil git remote -v menunjukkan URL repository SIMASIF yang benar, dan git status tidak menampilkan pesan error.
+
+Kalau semua sesuai, lanjutkan ke Bagian 5.
 
 ---
 
-## 4. Install Dependency Composer
+## BAGIAN 5 - Composer Install (Dependency Project)
 
-**Sama untuk semua OS:**
-```bash
+### Cek
+
+Dari dalam folder simasif, jalankan:
+
+```
+dir vendor
+```
+
+Tentukan jalur berdasarkan hasil:
+- Kalau folder vendor tidak ditemukan, lanjut ke Jalur A.
+- Kalau folder vendor ada tapi kalian merasa belum lengkap, misalnya baru saja melakukan git pull dan ada perubahan pada file composer.json, lanjut ke Jalur B.
+- Kalau folder vendor sudah ada dan diyakini sudah lengkap, lanjut ke Jalur C untuk verifikasi.
+
+### Jalur A - Install dari Awal
+
+```
 composer install
 ```
 
-Jangan jalankan `composer update` — cukup `composer install` supaya versi package sama persis dengan yang sudah dikunci di `composer.lock`.
+Tunggu proses ini sampai selesai. Proses ini akan mendownload package PHPMailer, phpdotenv, dan package pendukung lainnya.
+
+### Jalur B - Update Setelah Ada Perubahan
+
+```
+composer install
+```
+
+Catatan penting: gunakan perintah composer install, bukan composer update. Perintah install akan mengikuti versi package yang sudah dikunci pada file composer.lock, sehingga semua anggota tim memakai versi yang sama persis. Perintah update berpotensi mengubah versi package secara otomatis dan menyebabkan perbedaan antar laptop anggota tim.
+
+### Jalur C - Verifikasi
+
+```
+dir vendor\autoload.php
+```
+
+Pastikan file tersebut memang ada. Kalau ada, berarti proses instalasi dependency sudah selesai dengan baik.
+
+Lanjutkan ke Bagian 6.
 
 ---
 
-## 5. Setup File `.env`
+## BAGIAN 6 - File .env
 
-**Sama untuk semua OS.** Copy dari template:
+### Cek
 
-**Windows (Command Prompt):**
-```cmd
-copy .env.example .env
 ```
-**Windows (Git Bash) / Linux:**
-```bash
+dir .env
+```
+
+Tentukan jalur berdasarkan hasil:
+- Kalau file tersebut tidak ditemukan, lanjut ke Jalur A.
+- Kalau file tersebut sudah ada tapi isinya belum pernah diubah dari template (masih berisi contoh seperti your_password), lanjut ke Jalur B.
+- Kalau file tersebut sudah ada dan sudah pernah diisi sebelumnya, lanjut ke Jalur C untuk verifikasi.
+
+### Jalur A - Buat dari Awal
+
+```
 cp .env.example .env
 ```
 
-Buka `.env` (pakai VS Code), isi:
-```env
-DB_PASSWORD=<password_yang_kalian_buat_di_langkah_2>
-```
+Setelah file dibuat, lanjutkan ke Jalur B untuk mengisi nilai yang dibutuhkan.
 
-**Khusus Windows dengan Laragon**, sesuaikan juga `APP_URL` karena Laragon otomatis membuat virtual host berdasarkan nama folder:
-```env
+### Jalur B - Setup
+
+Buka file .env menggunakan VS Code atau Notepad, lalu ubah baris berikut:
+
+```
+DB_PASSWORD=<password_simasif_user_dari_Bagian_3>
 APP_URL=http://simasif.test
 ```
-(Laragon otomatis pakai akhiran `.test`, beda dengan `.local` yang dipakai di setup Ubuntu — ini tidak masalah, cuma beda konvensi)
 
-`MAIL_USERNAME` dan `MAIL_PASSWORD` boleh dikosongkan dulu.
+Biarkan baris lainnya sesuai dengan isi default pada .env.example. Untuk MAIL_USERNAME dan MAIL_PASSWORD, boleh dikosongkan terlebih dahulu karena belum dibutuhkan sampai tahap pengerjaan fitur Forgot Password nanti.
+
+### Jalur C - Verifikasi
+
+Buka file .env, lalu periksa kembali:
+- DB_PASSWORD sudah berisi password simasif_user yang benar, bukan lagi placeholder
+- APP_URL berisi http://simasif.test
+- DB_DATABASE berisi simasif, dan DB_USERNAME berisi simasif_user
+
+Kalau ada yang belum sesuai, kembali ke Jalur B untuk memperbaikinya.
+
+Kalau semua sudah sesuai, lanjutkan ke Bagian 7.
 
 ---
 
-## 6. Setup Virtual Host
+## BAGIAN 7 - Virtual Host (simasif.test)
 
-### Windows (Laragon — jauh lebih simpel)
+### Cek
 
-Kalau project sudah ditaruh di `C:\laragon\www\simasif` (langkah 3), Laragon **otomatis** membuat virtual host tanpa perlu konfigurasi manual apa pun. Cukup:
+Buka browser, lalu akses alamat http://simasif.test
 
-1. Buka Laragon, klik **Start All**
-2. Klik menu **www** di Laragon → klik kanan folder `simasif` → **Open with browser** — atau langsung ketik di browser: `http://simasif.test`
+Tentukan jalur berdasarkan hasil:
+- Kalau muncul pesan seperti "This site can't be reached" atau error terkait DNS, lanjut ke Jalur A.
+- Kalau muncul halaman berisi daftar file dan folder (bukan tampilan aplikasi), atau muncul pesan 403 Forbidden, lanjut ke Jalur B.
+- Kalau muncul tulisan yang berasal dari file public/index.php (misalnya tulisan "SIMASIF environment siap"), berarti sudah berhasil, lanjut ke Jalur C untuk verifikasi akhir.
 
-**Penting:** karena struktur project kita `public/` adalah document root (bukan folder root project), perlu sedikit penyesuaian. Klik kanan ikon Laragon → **Apache** → **sites-enabled** → cari file `auto.simasif.test.conf`, buka, ubah baris `DocumentRoot` dan `<Directory>` supaya mengarah ke `public/`:
-```apache
+### Jalur A - Setup dari Awal
+
+Laragon secara otomatis akan mendeteksi folder yang ada di dalam www dan membuatkan virtual host dengan nama sesuai nama folder tersebut ditambah akhiran .test. Untuk memastikan ini berjalan:
+1. Pastikan Laragon dalam keadaan Start All
+2. Klik kanan ikon Laragon, lalu periksa menu Www directory, pastikan menunjuk ke folder C:\laragon\www
+3. Restart Laragon dengan klik Stop All kemudian Start All
+4. Coba akses kembali http://simasif.test. Kalau masih belum berhasil, kemungkinan besar memang perlu perbaikan pada bagian DocumentRoot, lanjutkan ke Jalur B
+
+### Jalur B - Perbaiki DocumentRoot
+
+Virtual host otomatis yang dibuat Laragon secara default akan mengarah ke folder utama project, padahal yang dibutuhkan adalah folder public di dalamnya. Perbaiki dengan langkah berikut:
+
+1. Klik kanan ikon Laragon, pilih Apache, lalu pilih sites-enabled
+2. Akan terbuka folder berisi file konfigurasi. Cari file bernama auto.simasif.test.conf, lalu buka menggunakan Notepad atau VS Code
+3. Ubah baris DocumentRoot dan baris Directory, tambahkan kata /public di bagian akhir path, sehingga menjadi seperti berikut:
+
+```
 DocumentRoot "C:/laragon/www/simasif/public"
 <Directory "C:/laragon/www/simasif/public">
+    AllowOverride All
+    Require all granted
+</Directory>
 ```
-Simpan, lalu klik **Stop All** → **Start All** di Laragon.
 
-Akses: `http://simasif.test`
+4. Simpan file tersebut
+5. Restart Laragon dengan klik Stop All kemudian Start All
 
-### 🐧 Ubuntu/Linux
+### Jalur C - Verifikasi
 
-```bash
-sudo nano /etc/apache2/sites-available/simasif.conf
-```
-Isi (ganti `USERNAME` dan path sesuai lokasi project):
-```apache
-<VirtualHost *:80>
-    ServerName simasif.local
-    DocumentRoot /home/USERNAME/path/ke/simasif/public
+Muat ulang (refresh) halaman http://simasif.test di browser, pastikan yang tampil benar-benar konten dari file public/index.php, bukan daftar file dan folder.
 
-    <Directory /home/USERNAME/path/ke/simasif/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
+Catatan: terkadang setelah Laragon di-restart, file auto.simasif.test.conf akan ter-generate ulang secara otomatis dan pengaturan DocumentRoot kembali seperti semula (kehilangan tambahan /public). Kalau tiba-tiba muncul kembali halaman daftar file, ulangi langkah pada Jalur B.
 
-    ErrorLog ${APACHE_LOG_DIR}/simasif-error.log
-    CustomLog ${APACHE_LOG_DIR}/simasif-access.log combined
-</VirtualHost>
-```
-```bash
-sudo a2ensite simasif.conf
-sudo a2enmod rewrite
-sudo systemctl restart apache2
-echo "127.0.0.1   simasif.local" | sudo tee -a /etc/hosts
-```
+Kalau tampilan sudah benar, berarti environment kalian sudah siap sepenuhnya.
 
 ---
 
-## 7. Perbaiki Permission Folder
+## RINGKASAN STATUS
 
-### Windows
+Salin tabel berikut, isi kolom status sesuai kondisi masing-masing, lalu kirimkan ke grup tim sebagai laporan progres setup:
 
-Umumnya **tidak ada masalah permission** seperti di Linux — Windows tidak punya konsep permission folder home yang ketat seperti itu. Tapi kalau folder `storage/` bermasalah tidak bisa ditulis (jarang terjadi), klik kanan folder `storage` → **Properties** → tab **Security** → pastikan user kalian punya izin **Full Control**.
+| Bagian | Status (Sudah/Belum) | Catatan |
+|---|---|---|
+| 1. Git dan GitHub | | |
+| 2. Laragon (PHP, Apache, Composer) | | |
+| 3. PostgreSQL (user dan database) | | |
+| 4. Clone Repository | | |
+| 5. Composer Install | | |
+| 6. File .env | | |
+| 7. Virtual Host simasif.test | | |
 
-### Ubuntu/Linux
+Kalau semua baris sudah berstatus Sudah, laporkan ke tim bahwa kalian sudah siap untuk mulai mengerjakan Tahap 1.
 
-```bash
-chmod o+x /home/USERNAME
-chmod o+x /home/USERNAME/path
-chmod o+x /home/USERNAME/path/ke
-chmod o+x /home/USERNAME/path/ke/simasif
+---
+
+## ALUR KERJA GIT SEHARI-HARI (Setelah Semua Setup Selesai)
+
+Sebelum mulai bekerja setiap harinya, jalankan:
+
 ```
-```bash
-sudo chown -R www-data:www-data storage/
-sudo chmod -R 775 storage/
-sudo usermod -aG www-data $USER
-```
-(logout & login ulang setelah baris terakhir)
-
----
-
-## 8. Testing
-
-**Windows:** buka browser, akses `http://simasif.test`
-**Linux:** buka browser, akses `http://simasif.local`
-
-Kalau muncul tulisan dari `public/index.php` saat ini, setup berhasil.
-
-**Kalau muncul 403 Forbidden (Windows):** cek `DocumentRoot` di config Apache Laragon sudah benar mengarah ke `public/`, bukan ke root folder project.
-
-**Kalau muncul 403 Forbidden (Linux):** cek permission folder (langkah 7), pakai `namei -l /home/USERNAME/path/ke/simasif/public` untuk cari folder mana yang menghalangi.
-
-**Kalau muncul error database:** cek `.env` — pastikan `DB_PASSWORD` benar dan PostgreSQL service/aplikasi jalan (Windows: cek di pgAdmin server terhubung; Linux: `sudo systemctl status postgresql`).
-
----
-
-## Checklist Sebelum Mulai Coding
-
-- [ ] `php -v` menunjukkan PHP ≥8.1
-- [ ] `php -m | findstr pgsql` (Windows) / `php -m | grep pgsql` (Linux) menampilkan `pdo_pgsql` & `pgsql`
-- [ ] PostgreSQL jalan, bisa `psql -U simasif_user -d simasif -h 127.0.0.1 -W`
-- [ ] `composer install` sukses tanpa error
-- [ ] `.env` sudah diisi sesuai milik sendiri (terutama `DB_PASSWORD`, dan `APP_URL` sesuai OS)
-- [ ] `http://simasif.test` (Windows) atau `http://simasif.local` (Linux) bisa dibuka tanpa error
-- [ ] `git status` menunjukkan repo bersih
-
----
-
-## Alur Kerja Git Sehari-hari (Sama untuk Semua OS)
-
-**Sebelum mulai kerja, tarik perubahan terbaru dulu:**
-```bash
 git checkout develop
 git pull origin develop
 ```
 
-**Buat branch sendiri untuk fitur yang dikerjakan:**
-```bash
+Buat branch sendiri untuk fitur yang akan dikerjakan:
+
+```
 git checkout -b feature/nama-fitur-kamu
 ```
 
-**Setelah selesai kerja:**
-```bash
+Setelah selesai mengerjakan sesuatu:
+
+```
 git add .
-git commit -m "feat: deskripsi singkat yang dikerjakan"
+git commit -m "feat: deskripsi singkat pekerjaan yang dilakukan"
 git push origin feature/nama-fitur-kamu
 ```
 
-Lalu buat **Pull Request** di GitHub dari branch kalian ke `develop`, minta salah satu teman review sebelum di-merge.
+Setelah itu, buat Pull Request di GitHub dari branch kalian ke branch develop, lalu minta salah satu anggota tim untuk melakukan review sebelum digabungkan.
 
-**Jangan pernah:**
-- Commit file `.env` (sudah otomatis di-ignore, tapi tetap hati-hati)
-- Push langsung ke branch `main`
-- Jalankan `composer update` tanpa diskusi tim dulu
-
----
-
-## Catatan Penting untuk Tim Campuran OS
-
-- **Path folder berbeda** antara Windows (`C:\laragon\www\simasif`) dan Linux (`/home/user/.../simasif`) — ini **tidak masalah** karena path itu cuma di virtual host lokal masing-masing, tidak pernah masuk ke kode yang di-commit.
-- **`APP_URL` di `.env` boleh beda** per anggota (`.test` vs `.local`) — karena `.env` memang **tidak di-commit**, jadi masing-masing bebas pakai domain lokal sesuai OS masing-masing tanpa bentrok.
-- **Pastikan semua pakai versi PHP yang sama** (minimal sama-sama ≥8.1, idealnya sama persis misal semua PHP 8.2) untuk menghindari bug aneh akibat perbedaan versi.
-- **Baris kode jangan pernah hardcode path** (misal `C:\laragon\...` atau `/home/movic/...`) — selalu pakai `__DIR__` atau konstanta dari `Config/app.php` supaya kode portable di semua OS.
+Hal-hal yang tidak boleh dilakukan:
+- Jangan pernah melakukan commit terhadap file .env, walaupun file ini sudah otomatis diabaikan oleh .gitignore, tetap periksa dengan git status sebelum melakukan commit
+- Jangan melakukan push langsung ke branch main
+- Jangan menjalankan composer update tanpa berdiskusi terlebih dahulu dengan tim, karena dapat mengubah versi package untuk semua orang dan berpotensi menyebabkan bug yang tidak terduga
 
 ---
 
-## Kalau Ada Masalah
+## Kalau Masih Ada Kendala
 
-Tanyakan ke grup tim dulu sebelum menghabiskan waktu sendirian. Catat solusi yang ditemukan di file ini (edit & commit lagi) supaya anggota lain atau kalau ganti laptop tidak mengulang proses debugging yang sama.
+Jangan memendam masalah sendirian lebih dari 15 sampai 20 menit. Segera tanyakan ke grup tim dengan menyertakan informasi berikut:
+1. Bagian nomor berapa pada panduan ini yang bermasalah
+2. Screenshot pesan error secara lengkap
+3. Perintah apa saja yang sudah dijalankan sebelum error tersebut muncul
+
+Kemungkinan besar salah satu anggota tim lain sudah pernah mengalami masalah yang sama. Kalau menemukan solusi baru yang belum tercantum dalam panduan ini, mohon perbarui juga file ini dengan cara mengedit, melakukan commit, dan push perubahan tersebut, supaya anggota lain tidak perlu mengulang proses debugging yang sama.
