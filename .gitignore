@@ -37,3 +37,8 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Database backup
+/database/backups/*.backup
+/database/backups/*.sql
+!/database/backups/.gitkeep
