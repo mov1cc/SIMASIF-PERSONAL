@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 use Dotenv\Dotenv;
 
 /*
@@ -71,6 +75,13 @@ session_start();
 
 require dirname(__DIR__) . '/app/Exceptions/Handler.php';
 
+set_exception_handler(
+    [
+        \App\Exceptions\Handler::class,
+        'handle'
+    ]
+);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -78,10 +89,7 @@ require dirname(__DIR__) . '/app/Exceptions/Handler.php';
 |--------------------------------------------------------------------------
 */
 
-// sementara belum pakai Router
-// nanti diganti ketika Core Router selesai
-
-require dirname(__DIR__) . '/routes/web.php';
+$router = require dirname(__DIR__) . '/routes/web.php';
 
 
-echo "SIMASIF Framework Running";
+$router->dispatch();
