@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     'driver' => $_ENV['DB_CONNECTION'] ?? 'pgsql',
 
     'host' => $_ENV['DB_HOST'] ?? '127.0.0.1',
@@ -14,4 +15,5 @@ return [
     'password' => $_ENV['DB_PASSWORD'] ?? '',
 
     'charset' => 'utf8'
+
 ];

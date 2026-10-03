@@ -4,19 +4,17 @@ namespace App\Core;
 
 class Response
 {
-
     /**
      * Redirect ke URL tertentu
      */
     public static function redirect(string $url): never
     {
-        header(
-            "Location: " . $url
-        );
+        if (!headers_sent()) {
+            header("Location: {$url}");
+        }
 
         exit;
     }
-
 
     /**
      * Response JSON
@@ -28,18 +26,17 @@ class Response
 
         http_response_code($status);
 
-        header(
-            'Content-Type: application/json'
-        );
+        if (!headers_sent()) {
+            header('Content-Type: application/json; charset=UTF-8');
+        }
 
         echo json_encode(
             $data,
-            JSON_PRETTY_PRINT
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );
 
         exit;
     }
-
 
     /**
      * Render View
@@ -49,40 +46,24 @@ class Response
         array $data = []
     ): void {
 
-        $viewPath =
-            BASE_PATH .
-            '/app/Views/' .
-            $view .
-            '.php';
-
+        $viewPath = dirname(__DIR__) . "/Views/{$view}.php";
 
         if (!file_exists($viewPath)) {
-
             throw new \Exception(
-                "View tidak ditemukan: " . $view
+                "View {$view} tidak ditemukan."
             );
-
         }
-
 
         extract($data);
 
-
         require $viewPath;
-
     }
-
 
     /**
-     * Mengirim status HTTP
+     * Set HTTP Status Code
      */
-    public static function status(
-        int $code
-    ): void {
-
+    public static function status(int $code): void
+    {
         http_response_code($code);
-
     }
-
-
 }

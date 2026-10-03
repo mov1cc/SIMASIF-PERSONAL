@@ -5,6 +5,8 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 use Dotenv\Dotenv;
+use App\Exceptions\Handler;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +19,24 @@ require __DIR__ . '/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
+| Base Path
+|--------------------------------------------------------------------------
+*/
+
+define(
+    'BASE_PATH',
+    dirname(__DIR__)
+);
+
+
+/*
+|--------------------------------------------------------------------------
 | Load Environment Variable
 |--------------------------------------------------------------------------
 */
 
 $dotenv = Dotenv::createImmutable(
-    dirname(__DIR__)
+    BASE_PATH
 );
 
 $dotenv->load();
@@ -34,13 +48,14 @@ $dotenv->load();
 |--------------------------------------------------------------------------
 */
 
-$appConfig = require dirname(__DIR__) . '/app/Config/app.php';
+$appConfig = require BASE_PATH . '/app/Config/app.php';
 
-$dbConfig = require dirname(__DIR__) . '/app/Config/database.php';
+$dbConfig = require BASE_PATH . '/app/Config/database.php';
 
-$mailConfig = require dirname(__DIR__) . '/app/Config/mail.php';
+$mailConfig = require BASE_PATH . '/app/Config/mail.php';
 
-require dirname(__DIR__) . '/app/Config/constants.php';
+require BASE_PATH . '/app/Config/constants.php';
+
 
 
 /*
@@ -52,6 +67,7 @@ require dirname(__DIR__) . '/app/Config/constants.php';
 date_default_timezone_set(
     $appConfig['timezone']
 );
+
 
 
 /*
@@ -67,20 +83,15 @@ session_name(
 session_start();
 
 
+
 /*
 |--------------------------------------------------------------------------
-| Load Exception Handler
+| Register Exception Handler
 |--------------------------------------------------------------------------
 */
 
-require dirname(__DIR__) . '/app/Exceptions/Handler.php';
+Handler::register();
 
-set_exception_handler(
-    [
-        \App\Exceptions\Handler::class,
-        'handle'
-    ]
-);
 
 
 /*
@@ -89,7 +100,14 @@ set_exception_handler(
 |--------------------------------------------------------------------------
 */
 
-$router = require dirname(__DIR__) . '/routes/web.php';
+$router = require BASE_PATH . '/routes/web.php';
 
+
+
+/*
+|--------------------------------------------------------------------------
+| Dispatch Request
+|--------------------------------------------------------------------------
+*/
 
 $router->dispatch();

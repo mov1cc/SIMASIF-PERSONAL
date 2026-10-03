@@ -4,11 +4,7 @@ namespace App\Core;
 
 class Router
 {
-
     private array $routes = [];
-
-
-    private array $middlewares = [];
 
 
     /**
@@ -78,42 +74,44 @@ class Router
      * Jalankan router
      */
     public function dispatch(): void
-{
-    $method = Request::method();
+    {
+        $method = Request::method();
 
-    $uri = Request::uri();
-
-
-    foreach ($this->routes as $route) {
-
-        if (
-            $route['method'] === $method
-            &&
-            $route['path'] === $uri
-        ) {
-
-            $this->runMiddleware(
-                $route['middleware']
-            );
+        $uri = Request::uri();
 
 
-            $this->runController(
-                $route['action']
-            );
+        foreach ($this->routes as $route) {
 
-            return;
+            if (
+                $route['method'] === $method
+                &&
+                $route['path'] === $uri
+            ) {
+
+                $this->runMiddleware(
+                    $route['middleware']
+                );
+
+
+                $this->runController(
+                    $route['action']
+                );
+
+
+                return;
+
+            }
+
         }
 
+
+        Response::status(404);
+
+
+        Response::view(
+            'errors/404'
+        );
     }
-
-
-    Response::status(404);
-
-
-    Response::view(
-        'errors/404'
-    );
-}
 
 
     /**
@@ -143,14 +141,16 @@ class Router
         string $action
     ): void {
 
-
-        [$controller, $method] =
-            explode('@', $action);
+        [
+            $controller,
+            $method
+        ] = explode('@', $action);
 
 
 
         $controllerClass =
             "App\\Controllers\\{$controller}";
+
 
 
         if (!class_exists($controllerClass)) {
@@ -174,15 +174,15 @@ class Router
         )) {
 
             throw new \Exception(
-                "Method {$method} tidak ditemukan"
+                "Method {$method} tidak ditemukan pada {$controllerClass}"
             );
 
         }
 
 
+
         $controllerInstance->$method();
 
     }
-
 
 }

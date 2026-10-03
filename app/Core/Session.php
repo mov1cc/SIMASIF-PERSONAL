@@ -6,99 +6,68 @@ class Session
 {
 
     /**
-     * Memulai session
-     */
-    public static function start(): void
-    {
-        if (session_status() === PHP_SESSION_NONE) {
-
-            $config = require BASE_PATH . '/app/Config/app.php';
-
-
-            session_name(
-                $config['session']['name']
-            );
-
-
-            session_start([
-                'cookie_lifetime' => 0,
-                'cookie_httponly' => true,
-                'cookie_secure' => false,
-                'cookie_samesite' => 'Lax'
-            ]);
-
-        }
-    }
-
-
-    /**
-     * Menyimpan data session
+     * Set session value
      */
     public static function set(
         string $key,
         mixed $value
     ): void {
 
-        self::start();
-
         $_SESSION[$key] = $value;
 
     }
 
 
+
     /**
-     * Mengambil data session
+     * Ambil session value
      */
     public static function get(
         string $key,
         mixed $default = null
     ): mixed {
 
-        self::start();
-
         return $_SESSION[$key] ?? $default;
 
     }
 
 
+
     /**
-     * Mengecek session tersedia
+     * Cek session tersedia
      */
     public static function has(
         string $key
     ): bool {
-
-        self::start();
 
         return isset($_SESSION[$key]);
 
     }
 
 
+
     /**
-     * Menghapus session tertentu
+     * Hapus session tertentu
      */
     public static function remove(
         string $key
     ): void {
-
-        self::start();
 
         unset($_SESSION[$key]);
 
     }
 
 
+
     /**
      * Flash message
-     * hanya muncul sekali
+     * 
+     * Data hanya tersedia sekali request
      */
     public static function flash(
         string $key,
         mixed $value = null
     ): mixed {
-
-        self::start();
 
 
         if ($value !== null) {
@@ -110,27 +79,35 @@ class Session
         }
 
 
-        $message =
-            $_SESSION['_flash'][$key] ?? null;
+        if (
+            isset($_SESSION['_flash'][$key])
+        ) {
+
+            $message =
+                $_SESSION['_flash'][$key];
 
 
-        unset(
-            $_SESSION['_flash'][$key]
-        );
+            unset(
+                $_SESSION['_flash'][$key]
+            );
 
 
-        return $message;
+            return $message;
+
+        }
+
+
+        return null;
 
     }
 
 
+
     /**
-     * Menghapus seluruh session
+     * Hapus semua session
      */
     public static function destroy(): void
     {
-        self::start();
-
 
         $_SESSION = [];
 
@@ -139,7 +116,8 @@ class Session
             ini_get("session.use_cookies")
         ) {
 
-            $params = session_get_cookie_params();
+            $params =
+                session_get_cookie_params();
 
 
             setcookie(
@@ -158,6 +136,5 @@ class Session
         session_destroy();
 
     }
-
 
 }

@@ -4,58 +4,70 @@ namespace App\Core;
 
 use PDO;
 
-class Model
+
+abstract class Model
 {
 
-    protected Database $database;
+    protected PDO $db;
+
 
     protected string $table = '';
 
 
+
     public function __construct()
     {
-        $this->database = Database::getInstance();
+
+        $this->db =
+            Database::getInstance()
+            ->getConnection();
+
     }
 
 
+
     /**
-     * Menjalankan query manual
+     * Menjalankan query SELECT banyak data
      */
     protected function query(
         string $sql,
         array $params = []
-    ): \PDOStatement {
+    ): array {
 
-        $statement = $this->database->prepare($sql);
+        $statement =
+            $this->db->prepare($sql);
+
 
         $statement->execute($params);
 
-        return $statement;
+
+        return $statement->fetchAll(
+            PDO::FETCH_ASSOC
+        );
 
     }
 
 
+
     /**
-     * Ambil data berdasarkan primary key id
+     * Mengambil satu data
      */
-    public function find(
-        int $id
+    protected function first(
+        string $sql,
+        array $params = []
     ): ?array {
 
-        $sql = "
-            SELECT *
-            FROM {$this->table}
-            WHERE id = :id
-            LIMIT 1
-        ";
+        $statement =
+            $this->db->prepare($sql);
 
 
-        $result = $this->query(
-            $sql,
-            [
-                'id' => $id
-            ]
-        )->fetch(PDO::FETCH_ASSOC);
+        $statement->execute($params);
+
+
+        $result =
+            $statement->fetch(
+                PDO::FETCH_ASSOC
+            );
 
 
         return $result ?: null;
@@ -63,120 +75,56 @@ class Model
     }
 
 
+
     /**
-     * Ambil semua data
+     * Menjalankan INSERT UPDATE DELETE
      */
-    public function all(): array
-    {
+    protected function execute(
+        string $sql,
+        array $params = []
+    ): bool {
+
+        $statement =
+            $this->db->prepare($sql);
+
+
+        return $statement->execute($params);
+
+    }
+
+
+
+    /**
+     * Cari berdasarkan ID
+     */
+    protected function find(
+        int $id
+    ): ?array {
+
 
         $sql = "
             SELECT *
             FROM {$this->table}
+            WHERE id = ?
         ";
 
 
-        return $this->query($sql)
-            ->fetchAll(PDO::FETCH_ASSOC);
+        return $this->first(
+            $sql,
+            [$id]
+        );
 
     }
 
 
-    /**
-     * Insert data
-     */
-    public function insert(
-        array $data
-    ): int {
-
-
-        $columns = implode(
-            ', ',
-            array_keys($data)
-        );
-
-
-        $parameters = implode(
-            ', ',
-            array_map(
-                fn($key) => ':' . $key,
-                array_keys($data)
-            )
-        );
-
-
-        $sql = "
-            INSERT INTO {$this->table}
-            ($columns)
-            VALUES
-            ($parameters)
-            RETURNING id
-        ";
-
-
-        return (int) $this->query(
-            $sql,
-            $data
-        )->fetchColumn();
-
-    }
-
 
     /**
-     * Update data
+     * ID terakhir setelah insert
      */
-    public function update(
-        int $id,
-        array $data
-    ): bool {
+    protected function lastInsertId(): string
+    {
 
-
-        $fields = implode(
-            ', ',
-            array_map(
-                fn($key) => "{$key} = :{$key}",
-                array_keys($data)
-            )
-        );
-
-
-        $sql = "
-            UPDATE {$this->table}
-            SET {$fields}
-            WHERE id = :id
-        ";
-
-
-        $data['id'] = $id;
-
-
-        return $this->query(
-            $sql,
-            $data
-        )->rowCount() > 0;
-
-    }
-
-
-    /**
-     * Delete data
-     */
-    public function delete(
-        int $id
-    ): bool {
-
-
-        $sql = "
-            DELETE FROM {$this->table}
-            WHERE id = :id
-        ";
-
-
-        return $this->query(
-            $sql,
-            [
-                'id'=>$id
-            ]
-        )->rowCount() > 0;
+        return $this->db->lastInsertId();
 
     }
 
