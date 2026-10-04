@@ -101,6 +101,17 @@ class Session
 
     }
 
+        /**
+     * Regenerate Session ID
+     *
+     * Digunakan setelah login untuk mencegah
+     * Session Fixation Attack.
+     */
+    public static function regenerate(): void
+    {
+        session_regenerate_id(true);
+    }
+
 
 
     /**

@@ -135,53 +135,56 @@ class Router
 
 
     /**
-     * Jalankan controller
-     */
-    private function runController(
-        string $action
-    ): void {
+ * Jalankan controller
+ */
+private function runController(
+    string $action
+): void {
 
-        [
-            $controller,
-            $method
-        ] = explode('@', $action);
+    if (!str_contains($action, '@')) {
 
+        throw new \Exception(
+            "Format route tidak valid. Gunakan Controller@method."
+        );
 
+    }
 
-        $controllerClass =
-            "App\\Controllers\\{$controller}";
-
-
-
-        if (!class_exists($controllerClass)) {
-
-            throw new \Exception(
-                "Controller {$controllerClass} tidak ditemukan"
-            );
-
-        }
+    [
+        $controller,
+        $method
+    ] = explode('@', $action, 2);
 
 
-
-        $controllerInstance =
-            new $controllerClass();
-
+    $controllerClass =
+        "App\\Controllers\\{$controller}";
 
 
-        if (!method_exists(
-            $controllerInstance,
-            $method
-        )) {
+    if (!class_exists($controllerClass)) {
 
-            throw new \Exception(
-                "Method {$method} tidak ditemukan pada {$controllerClass}"
-            );
+        throw new \Exception(
+            "Controller {$controllerClass} tidak ditemukan."
+        );
 
-        }
+    }
 
 
+    $controllerInstance =
+        new $controllerClass();
 
-        $controllerInstance->$method();
+
+    if (!method_exists(
+        $controllerInstance,
+        $method
+    )) {
+
+        throw new \Exception(
+            "Method {$method} tidak ditemukan pada {$controllerClass}."
+        );
+
+    }
+
+
+    $controllerInstance->$method();
 
     }
 
