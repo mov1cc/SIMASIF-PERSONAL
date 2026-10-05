@@ -114,8 +114,10 @@ class Router
     }
 
 
-    /**
+        /**
      * Jalankan middleware
+     *
+     * Format: NamaClass::class atau NamaClass::class . ':param1,param2'
      */
     private function runMiddleware(
         array $middlewares
@@ -123,9 +125,17 @@ class Router
 
         foreach ($middlewares as $middleware) {
 
+            [$class, $params] = array_pad(
+                explode(':', $middleware, 2),
+                2,
+                null
+            );
 
-            $instance = new $middleware();
+            $args = $params !== null
+                ? explode(',', $params)
+                : [];
 
+            $instance = new $class(...$args);
 
             $instance->handle();
 
