@@ -24,15 +24,46 @@ class ValidationHelper
         return mb_strlen((string) $value) <= $max;
     }
 
+    public static function numeric(mixed $value): bool
+    {
+        return is_numeric(trim((string) $value));
+    }
+
+    public static function integer(mixed $value): bool
+    {
+        return filter_var(trim((string) $value), FILTER_VALIDATE_INT) !== false;
+    }
+
+    /** Nilai >= batas */
+    public static function gte(mixed $value, float $limit): bool
+    {
+        $value = trim((string) $value);
+
+        return is_numeric($value) && (float) $value >= $limit;
+    }
+
+    /** Nilai > batas */
+    public static function gt(mixed $value, float $limit): bool
+    {
+        $value = trim((string) $value);
+
+        return is_numeric($value) && (float) $value > $limit;
+    }
+
+    /** Nilai <= batas */
+    public static function lte(mixed $value, float $limit): bool
+    {
+        $value = trim((string) $value);
+
+        return is_numeric($value) && (float) $value <= $limit;
+    }
+
     /**
      * Validasi sekumpulan field.
      *
-     * Contoh:
-     *   validate(
-     *       ['email' => $email],
-     *       ['email' => ['required', 'email', 'max:100']],
-     *       ['email' => 'Email']
-     *   );
+     * Rule tersedia:
+     *   required, email, min:N (panjang minimal), max:N (panjang maksimal),
+     *   numeric, integer, gte:N, gt:N, lte:N
      *
      * @return array<string, string> field => pesan error pertama
      */
@@ -58,6 +89,11 @@ class ValidationHelper
                     'email'    => self::email($value),
                     'min'      => self::minLength($value, (int) $param),
                     'max'      => self::maxLength($value, (int) $param),
+                    'numeric'  => self::numeric($value),
+                    'integer'  => self::integer($value),
+                    'gte'      => self::gte($value, (float) $param),
+                    'gt'       => self::gt($value, (float) $param),
+                    'lte'      => self::lte($value, (float) $param),
                     default    => true,
                 };
 
@@ -68,6 +104,11 @@ class ValidationHelper
                         'email'    => "Format {$label} tidak valid.",
                         'min'      => "{$label} minimal {$param} karakter.",
                         'max'      => "{$label} maksimal {$param} karakter.",
+                        'numeric'  => "{$label} harus berupa angka.",
+                        'integer'  => "{$label} harus berupa bilangan bulat.",
+                        'gte'      => "{$label} tidak boleh kurang dari {$param}.",
+                        'gt'       => "{$label} harus lebih dari {$param}.",
+                        'lte'      => "{$label} tidak boleh lebih dari {$param}.",
                         default    => "{$label} tidak valid.",
                     };
 
