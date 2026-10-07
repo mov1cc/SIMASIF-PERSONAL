@@ -12,6 +12,10 @@ $uri = Request::uri();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'Pegawai', ENT_QUOTES, 'UTF-8') ?> - SIMASIF</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <?php foreach (($styles ?? []) as $css): ?>
+        <link href="<?= htmlspecialchars($css, ENT_QUOTES, 'UTF-8') ?>" rel="stylesheet">
+    <?php endforeach; ?>
 </head>
 <body class="bg-light">
 
@@ -48,5 +52,8 @@ $uri = Request::uri();
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <?php foreach (($scripts ?? []) as $js): ?>
+        <script src="<?= htmlspecialchars($js, ENT_QUOTES, 'UTF-8') ?>"></script>
+    <?php endforeach; ?>
 </body>
 </html>

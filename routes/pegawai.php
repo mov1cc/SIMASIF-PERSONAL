@@ -18,3 +18,4 @@ $router->post('/pegawai/layanan/store',   'Pegawai\LayananController@store',   $
 $router->get('/pegawai/layanan/edit',     'Pegawai\LayananController@edit',    $pegawai);
 $router->post('/pegawai/layanan/update',  'Pegawai\LayananController@update',  $pegawai);
 $router->post('/pegawai/layanan/delete',  'Pegawai\LayananController@destroy', $pegawai);
+$router->post('/pegawai/layanan/toggle',  'Pegawai\LayananController@toggle',  $pegawai);
