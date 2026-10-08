@@ -19,3 +19,11 @@ $router->get('/pegawai/layanan/edit',     'Pegawai\LayananController@edit',    $
 $router->post('/pegawai/layanan/update',  'Pegawai\LayananController@update',  $pegawai);
 $router->post('/pegawai/layanan/delete',  'Pegawai\LayananController@destroy', $pegawai);
 $router->post('/pegawai/layanan/toggle',  'Pegawai\LayananController@toggle',  $pegawai);
+
+// Pelanggan (Tahap 5)
+$router->get('/pegawai/pelanggan',          'Pegawai\PelangganController@index',   $pegawai);
+$router->get('/pegawai/pelanggan/create',   'Pegawai\PelangganController@create',  $pegawai);
+$router->post('/pegawai/pelanggan/store',   'Pegawai\PelangganController@store',   $pegawai);
+$router->get('/pegawai/pelanggan/edit',     'Pegawai\PelangganController@edit',    $pegawai);
+$router->post('/pegawai/pelanggan/update',  'Pegawai\PelangganController@update',  $pegawai);
+$router->post('/pegawai/pelanggan/delete',  'Pegawai\PelangganController@destroy', $pegawai);
