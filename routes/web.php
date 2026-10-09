@@ -9,6 +9,7 @@ $router->get(
     'TestController@index'
 );
 
+require BASE_PATH . '/routes/guest.php';
 require BASE_PATH . '/routes/auth.php';
 require BASE_PATH . '/routes/owner.php';
 require BASE_PATH . '/routes/pegawai.php';

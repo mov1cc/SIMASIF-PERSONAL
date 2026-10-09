@@ -28,6 +28,18 @@ class Layanan extends Model
         );
     }
 
+        /**
+     * Satu layanan aktif berdasarkan ID (dipakai halaman detail publik).
+     * Mengembalikan null kalau tidak ada ATAU layanan nonaktif.
+     */
+    public function findActiveById(int $id): ?array
+    {
+        return $this->first(
+            "SELECT * FROM layanan WHERE id = ? AND is_active = TRUE LIMIT 1",
+            [$id]
+        );
+    }
+
     /**
      * Cari berdasarkan ID (membuka visibilitas find() milik base Model)
      */
