@@ -27,3 +27,8 @@ $router->post('/pegawai/pelanggan/store',   'Pegawai\PelangganController@store',
 $router->get('/pegawai/pelanggan/edit',     'Pegawai\PelangganController@edit',    $pegawai);
 $router->post('/pegawai/pelanggan/update',  'Pegawai\PelangganController@update',  $pegawai);
 $router->post('/pegawai/pelanggan/delete',  'Pegawai\PelangganController@destroy', $pegawai);
+
+// Pemesanan & Jadwal (Tahap 8)
+$router->get('/pegawai/pemesanan',         'Pegawai\PemesananController@index',  $pegawai);
+$router->get('/pegawai/pemesanan/detail',  'Pegawai\PemesananController@detail', $pegawai);
+$router->get('/pegawai/jadwal',            'Pegawai\JadwalController@index',     $pegawai);

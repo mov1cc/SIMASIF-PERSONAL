@@ -36,6 +36,14 @@ $uri = Request::uri();
                     <a class="nav-link <?= str_starts_with($uri, '/pegawai/pelanggan') ? 'active' : '' ?>"
                         href="/pegawai/pelanggan">Pelanggan</a>
                 </li>
+                                <li class="nav-item">
+                    <a class="nav-link <?= str_starts_with($uri, '/pegawai/pemesanan') ? 'active' : '' ?>"
+                       href="/pegawai/pemesanan">Pemesanan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= str_starts_with($uri, '/pegawai/jadwal') ? 'active' : '' ?>"
+                       href="/pegawai/jadwal">Jadwal</a>
+                </li>
             </ul>
 
             <div class="d-flex align-items-center gap-3">
