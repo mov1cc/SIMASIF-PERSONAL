@@ -48,17 +48,17 @@ class Layanan extends Model
         return parent::find($id);
     }
 
-    /**
+    
+        /**
      * Tambah layanan baru, mengembalikan ID baru
-     *
-     * @param array{nama:string, deskripsi:string, harga:string, estimasi_durasi_menit:string, is_active:bool} $data
      */
     public function create(array $data): int
     {
         $row = $this->first(
             "INSERT INTO layanan
-                (nama, deskripsi, harga, estimasi_durasi_menit, is_active)
-             VALUES (?, ?, ?, ?, ?)
+                (nama, deskripsi, deliverables, harga, estimasi_durasi_menit,
+                 estimasi_hasil_hari, maks_orang, is_active)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
              RETURNING id",
             $this->toParams($data)
         );
@@ -75,8 +75,11 @@ class Layanan extends Model
             "UPDATE layanan
                 SET nama = ?,
                     deskripsi = ?,
+                    deliverables = ?,
                     harga = ?,
                     estimasi_durasi_menit = ?,
+                    estimasi_hasil_hari = ?,
+                    maks_orang = ?,
                     is_active = ?
               WHERE id = ?",
             [...$this->toParams($data), $id]
@@ -171,18 +174,22 @@ class Layanan extends Model
         ];
     }
 
-    /**
-     * Ubah input form menjadi urutan parameter query
+        /**
+     * Ubah input form menjadi urutan parameter query.
+     * String kosong pada kolom opsional disimpan sebagai NULL.
      */
     private function toParams(array $data): array
     {
+        $atauNull = fn ($v) => ($v === '' || $v === null) ? null : $v;
+
         return [
             $data['nama'],
-            $data['deskripsi'] !== '' ? $data['deskripsi'] : null,
+            $atauNull($data['deskripsi']),
+            $atauNull($data['deliverables']),
             $data['harga'],
-            $data['estimasi_durasi_menit'] !== ''
-                ? $data['estimasi_durasi_menit']
-                : null,
+            $atauNull($data['estimasi_durasi_menit']),
+            $atauNull($data['estimasi_hasil_hari']),
+            $atauNull($data['maks_orang']),
             $data['is_active'] ? 'true' : 'false',
         ];
     }

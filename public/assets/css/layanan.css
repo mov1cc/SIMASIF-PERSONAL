@@ -199,13 +199,20 @@ body.bg-light {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
     background: var(--sf-chip);
     border-radius: .7rem;
     padding: .8rem 1rem;
     margin: 1.1rem 0 1.2rem;
     font-size: .9rem;
 }
-.sf-meta span { display: inline-flex; align-items: center; gap: .5rem; }
+
+.sf-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
 
 .sf-section-label { text-transform: uppercase; color: var(--sf-muted); margin-bottom: .7rem; }
 

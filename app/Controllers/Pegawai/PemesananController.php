@@ -55,11 +55,11 @@ class PemesananController extends Controller
         if ($row === null) {
             throw new \Exception('Pemesanan tidak ditemukan.', 404);
         }
-
         $this->render('pegawai/pemesanan/detail', [
             'title'    => 'Detail ' . $row['kode_unik'],
             'p'        => $row,
             'riwayat'  => $this->pemesanan->riwayatWorkflow($id),
+            'addons'   => $this->pemesanan->addonDipesan($id),
         ]);
     }
 

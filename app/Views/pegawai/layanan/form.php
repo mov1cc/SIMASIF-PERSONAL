@@ -52,16 +52,27 @@ ob_start();
                     </div>
 
                     <div class="mb-3">
-    <label for="deskripsi" class="form-label">Deskripsi</label>
+                        <label for="deskripsi" class="form-label">Deskripsi</label>
+                        <textarea id="deskripsi" name="deskripsi" rows="3" maxlength="2000"
+                                  class="form-control <?= isset($errors['deskripsi']) ? 'is-invalid' : '' ?>"><?= F::e($nilai('deskripsi')) ?></textarea>
+                        <?php if (isset($errors['deskripsi'])): ?>
+                            <div class="invalid-feedback"><?= F::e($errors['deskripsi']) ?></div>
+                        <?php endif; ?>
+                        <div class="form-text">Penjelasan singkat paket, ditulis sebagai kalimat biasa.</div>
+                    </div>
 
-    <textarea id="deskripsi" name="deskripsi" rows="4"
-              class="form-control"><?= F::e($nilai('deskripsi')) ?></textarea>
-
-    <div class="form-text">
-        Satu baris = satu poin deliverables di kartu layanan
-        (contoh: &quot;10 file edit high-res&quot;).
-    </div>
-</div>
+                    <div class="mb-3">
+                        <label for="deliverables" class="form-label">Deliverables / Output</label>
+                        <textarea id="deliverables" name="deliverables" rows="5" maxlength="2000"
+                                  class="form-control <?= isset($errors['deliverables']) ? 'is-invalid' : '' ?>"><?= F::e($nilai('deliverables')) ?></textarea>
+                        <?php if (isset($errors['deliverables'])): ?>
+                            <div class="invalid-feedback"><?= F::e($errors['deliverables']) ?></div>
+                        <?php endif; ?>
+                        <div class="form-text">
+                            Satu baris = satu poin hasil di kartu layanan
+                            (contoh: &quot;10 file edit high-res&quot;).
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -75,7 +86,7 @@ ob_start();
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="estimasi_durasi_menit" class="form-label">Estimasi Durasi (menit)</label>
+                            <label for="estimasi_durasi_menit" class="form-label">Estimasi Durasi Sesi (menit)</label>
                             <input type="number" id="estimasi_durasi_menit" name="estimasi_durasi_menit"
                                    min="1" step="1"
                                    class="form-control <?= isset($errors['estimasi_durasi_menit']) ? 'is-invalid' : '' ?>"
@@ -83,6 +94,34 @@ ob_start();
                             <?php if (isset($errors['estimasi_durasi_menit'])): ?>
                                 <div class="invalid-feedback"><?= F::e($errors['estimasi_durasi_menit']) ?></div>
                             <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="estimasi_hasil_hari" class="form-label">Estimasi Hasil Siap (hari)</label>
+                            <input type="number" id="estimasi_hasil_hari" name="estimasi_hasil_hari"
+                                   min="1" step="1"
+                                   class="form-control <?= isset($errors['estimasi_hasil_hari']) ? 'is-invalid' : '' ?>"
+                                   value="<?= F::e($nilai('estimasi_hasil_hari')) ?>">
+                            <?php if (isset($errors['estimasi_hasil_hari'])): ?>
+                                <div class="invalid-feedback"><?= F::e($errors['estimasi_hasil_hari']) ?></div>
+                            <?php endif; ?>
+                            <div class="form-text">Lama hasil foto siap diterima setelah sesi.</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="maks_orang" class="form-label">
+                                Maksimal Orang <span class="text-muted">(opsional)</span>
+                            </label>
+                            <input type="number" id="maks_orang" name="maks_orang"
+                                   min="1" step="1"
+                                   class="form-control <?= isset($errors['maks_orang']) ? 'is-invalid' : '' ?>"
+                                   value="<?= F::e($nilai('maks_orang')) ?>">
+                            <?php if (isset($errors['maks_orang'])): ?>
+                                <div class="invalid-feedback"><?= F::e($errors['maks_orang']) ?></div>
+                            <?php endif; ?>
+                            <div class="form-text">Kosongkan jika jumlah orang tidak dibatasi.</div>
                         </div>
                     </div>
 

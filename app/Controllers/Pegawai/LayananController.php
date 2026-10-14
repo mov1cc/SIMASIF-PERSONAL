@@ -194,13 +194,16 @@ class LayananController extends Controller
         return is_scalar($value) ? trim((string) $value) : '';
     }
 
-    private function collectInput(): array
+        private function collectInput(): array
     {
         return [
             'nama'                  => $this->postString('nama'),
             'deskripsi'             => $this->postString('deskripsi'),
+            'deliverables'          => $this->postString('deliverables'),
             'harga'                 => $this->postString('harga'),
             'estimasi_durasi_menit' => $this->postString('estimasi_durasi_menit'),
+            'estimasi_hasil_hari'   => $this->postString('estimasi_hasil_hari'),
+            'maks_orang'            => $this->postString('maks_orang'),
             'is_active'             => Request::post('is_active') !== null,
         ];
     }
@@ -208,13 +211,23 @@ class LayananController extends Controller
     private function validateInput(array $input): array
     {
         $rules = [
-            'nama'  => ['required', 'max:150'],
-            'harga' => ['required', 'numeric', 'gte:0', 'lte:9999999999'],
+            'nama'         => ['required', 'max:150'],
+            'deskripsi'    => ['max:2000'],
+            'deliverables' => ['max:2000'],
+            'harga'        => ['required', 'numeric', 'gte:0', 'lte:9999999999'],
         ];
 
-        // Durasi opsional, tapi kalau diisi harus > 0 (sesuai CHECK database)
+        // Kolom opsional: kalau diisi harus bilangan bulat > 0 (sesuai CHECK database)
         if ($input['estimasi_durasi_menit'] !== '') {
             $rules['estimasi_durasi_menit'] = ['integer', 'gt:0', 'lte:1440'];
+        }
+
+        if ($input['estimasi_hasil_hari'] !== '') {
+            $rules['estimasi_hasil_hari'] = ['integer', 'gt:0', 'lte:365'];
+        }
+
+        if ($input['maks_orang'] !== '') {
+            $rules['maks_orang'] = ['integer', 'gt:0', 'lte:100'];
         }
 
         return ValidationHelper::validate(
@@ -222,8 +235,12 @@ class LayananController extends Controller
             $rules,
             [
                 'nama'                  => 'Nama layanan',
+                'deskripsi'             => 'Deskripsi',
+                'deliverables'          => 'Deliverables',
                 'harga'                 => 'Harga',
                 'estimasi_durasi_menit' => 'Estimasi durasi',
+                'estimasi_hasil_hari'   => 'Estimasi hasil',
+                'maks_orang'            => 'Maksimal orang',
             ]
         );
     }

@@ -5,14 +5,17 @@ namespace App\Controllers\Guest;
 use App\Core\Controller;
 use App\Core\Request;
 use App\Models\Layanan;
+use App\Models\AddonLayanan;
 
 class LayananController extends Controller
 {
     private Layanan $layanan;
+    private AddonLayanan $addon;
 
     public function __construct()
     {
         $this->layanan = new Layanan();
+        $this->addon   = new AddonLayanan();
     }
 
     /**
@@ -31,7 +34,7 @@ class LayananController extends Controller
      * GET /layanan/detail?id=1
      * Detail satu layanan aktif
      */
-    public function detail(): void
+        public function detail(): void
     {
         $raw = Request::get('id', 0);
         $id  = is_scalar($raw) ? (int) $raw : 0;
@@ -45,6 +48,7 @@ class LayananController extends Controller
         $this->render('guest/layanan/detail', [
             'title'   => $row['nama'],
             'layanan' => $row,
+            'addons'  => $this->addon->findActiveByLayanan($id),
         ]);
     }
 }

@@ -37,6 +37,30 @@ class FormatHelper
         return $sisa === 0 ? "{$jam} jam" : "{$jam} jam {$sisa} menit";
     }
 
+        /**
+     * Teks multi-baris -> daftar poin (satu baris = satu poin)
+     *
+     * @return string[]
+     */
+    public static function poin(?string $teks): array
+    {
+        $baris = preg_split('/\R/u', (string) $teks) ?: [];
+
+        return array_values(array_filter(array_map('trim', $baris), fn ($b) => $b !== ''));
+    }
+
+    /** 3 -> "3 hari"; kosong -> "-" */
+    public static function hari(mixed $n): string
+    {
+        return ($n === null || $n === '') ? '-' : ((int) $n) . ' hari';
+    }
+
+    /** 3 -> "Maks. 3 orang"; kosong -> "Tidak dibatasi" */
+    public static function maksOrang(mixed $n): string
+    {
+        return ($n === null || $n === '') ? 'Tidak dibatasi' : 'Maks. ' . ((int) $n) . ' orang';
+    }
+
     /**
      * Escape output HTML (singkatan htmlspecialchars)
      */

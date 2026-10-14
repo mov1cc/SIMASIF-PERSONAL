@@ -34,11 +34,21 @@ class PemesananService
         $this->kodeUnik  = new KodeUnikService($this->pemesanan);
     }
 
-    public static function durasiMenit(array $layanan): int
+        /**
+     * Durasi total sesi = durasi layanan (atau default) + tambahan durasi add-on.
+     *
+     * @param array $addons baris addon_layanan yang dipilih
+     */
+    public static function durasiMenit(array $layanan, array $addons = []): int
     {
         $durasi = (int) ($layanan['estimasi_durasi_menit'] ?? 0);
+        $total  = $durasi > 0 ? $durasi : self::DURASI_DEFAULT;
 
-        return $durasi > 0 ? $durasi : self::DURASI_DEFAULT;
+        foreach ($addons as $a) {
+            $total += (int) ($a['tambahan_durasi_menit'] ?? 0);
+        }
+
+        return $total;
     }
 
     /**
@@ -87,9 +97,9 @@ class PemesananService
      * @return array{ok:bool, kode?:string, error?:string}
      *         error: 'bentrok' kalau jadwal sudah terisi
      */
-    public function buatBooking(array $input, array $layanan): array
+            public function buatBooking(array $input, array $layanan, array $addons = []): array
     {
-        $durasi  = self::durasiMenit($layanan);
+        $durasi  = self::durasiMenit($layanan, $addons);
         $mulai   = $input['jam'] . ':00';
         $selesai = (new DateTimeImmutable("{$input['tanggal']} {$mulai}"))
             ->modify("+{$durasi} minutes")
@@ -128,8 +138,12 @@ class PemesananService
                     'catatan'      => $input['catatan'] !== '' ? $input['catatan'] : null,
                     'harga'        => (string) $layanan['harga'], // snapshot harga saat pesan
                 ]);
+                                foreach ($addons as $addon) {
+                    $this->pemesanan->insertAddon($baris['id'], $addon, 1);
+                }
 
                 $this->pemesanan->catatWorkflowAwal($baris['id']);
+
 
                 $this->db->commit();
 

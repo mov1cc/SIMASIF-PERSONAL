@@ -109,18 +109,18 @@ public function riwayatWorkflow(int $pemesananId): array
  * Pemesanan dalam rentang tanggal untuk halaman jadwal.
  * Durasi kosong dianggap 60 menit (sama dengan aturan adaBentrok()).
  */
-public function jadwalRentang(string $dari, string $sampai): array
-{
-    return $this->query(
-        "SELECT pemesanan_id AS id, kode_unik, tanggal_jadwal, jam_jadwal, status,
-                pelanggan_nama, layanan_nama, pegawai_nama,
-                COALESCE(estimasi_durasi_menit, 60) AS durasi_menit
-           FROM v_detail_pemesanan
-          WHERE tanggal_jadwal BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
-          ORDER BY tanggal_jadwal ASC, jam_jadwal ASC, pemesanan_id ASC",
-        [$dari, $sampai]
-    );
-}
+        public function jadwalRentang(string $dari, string $sampai): array
+    {
+        return $this->query(
+            "SELECT pemesanan_id AS id, kode_unik, tanggal_jadwal, jam_jadwal, status,
+                    pelanggan_nama, layanan_nama, pegawai_nama,
+                    durasi_total_menit AS durasi_menit
+               FROM v_detail_pemesanan
+              WHERE tanggal_jadwal BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
+              ORDER BY tanggal_jadwal ASC, jam_jadwal ASC, pemesanan_id ASC",
+            [$dari, $sampai]
+        );
+    }
 
     /**
      * Kunci transaksi per tanggal supaya dua booking bersamaan di hari
@@ -148,7 +148,7 @@ public function jadwalRentang(string $dari, string $sampai): array
      * @param string $mulai   H:i:s
      * @param string $selesai H:i:s
      */
-    public function adaBentrok(string $tanggal, string $mulai, string $selesai): bool
+        public function adaBentrok(string $tanggal, string $mulai, string $selesai): bool
     {
         return $this->first(
             "SELECT p.id
@@ -158,7 +158,14 @@ public function jadwalRentang(string $dari, string $sampai): array
                 AND p.status::text <> 'dibatalkan'
                 AND p.jam_jadwal < CAST(? AS TIME)
                 AND (p.jam_jadwal
-                     + COALESCE(l.estimasi_durasi_menit, 60) * INTERVAL '1 minute')
+                     + (COALESCE(l.estimasi_durasi_menit, 60)
+                        + COALESCE((
+                            SELECT SUM(a.tambahan_durasi_menit * pa.jumlah)
+                              FROM pemesanan_addon pa
+                              JOIN addon_layanan a ON a.id = pa.addon_id
+                             WHERE pa.pemesanan_id = p.id
+                          ), 0)
+                       )::int * INTERVAL '1 minute')
                     > CAST(? AS TIME)
               LIMIT 1",
             [$tanggal, $selesai, $mulai]
@@ -208,6 +215,40 @@ public function jadwalRentang(string $dari, string $sampai): array
                 (pemesanan_id, status_sebelumnya, status, catatan, diubah_oleh)
              VALUES (?, NULL, 'pemesanan_dibuat', ?, NULL)",
             [$pemesananId, 'Pemesanan dibuat oleh pelanggan']
+        );
+    }
+
+        /**
+     * Simpan satu add-on pada pemesanan (snapshot nama & harga).
+     * biaya_tambahan pemesanan diperbarui otomatis oleh trigger database.
+     */
+    public function insertAddon(int $pemesananId, array $addon, int $jumlah = 1): void
+    {
+        $this->execute(
+            "INSERT INTO pemesanan_addon
+                (pemesanan_id, addon_id, nama_saat_pesan, harga_saat_pesan, jumlah)
+             VALUES (?, ?, ?, ?, ?)",
+            [
+                $pemesananId,
+                (int) $addon['id'],
+                $addon['nama'],
+                (string) $addon['harga'],
+                $jumlah,
+            ]
+        );
+    }
+
+    /**
+     * Add-on yang dipilih pada satu pemesanan.
+     */
+    public function addonDipesan(int $pemesananId): array
+    {
+        return $this->query(
+            "SELECT addon_id, nama_saat_pesan, harga_saat_pesan, jumlah, subtotal
+               FROM pemesanan_addon
+              WHERE pemesanan_id = ?
+              ORDER BY id ASC",
+            [$pemesananId]
         );
     }
 }

@@ -2,11 +2,10 @@
 use App\Helpers\FormatHelper as F;
 
 /** @var array $layanan */
+/** @var array $addons */
 
 $title = $layanan['nama'];
-
-$baris = preg_split('/\R/u', (string) $layanan['deskripsi']) ?: [];
-$poin  = array_values(array_filter(array_map('trim', $baris), fn ($b) => $b !== ''));
+$poin  = F::poin($layanan['deliverables'] ?? null);
 
 ob_start();
 ?>
@@ -25,26 +24,55 @@ ob_start();
 
                 <h1 class="h3 fw-bold mb-2"><?= F::e($layanan['nama']) ?></h1>
 
-                <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
-                    <span class="fs-3 fw-bold"><?= F::e(F::rupiah($layanan['harga'])) ?></span>
-                    <span class="text-muted">
-                        <i class="bi bi-clock"></i>
-                        Estimasi durasi: <?= F::e(F::durasi($layanan['estimasi_durasi_menit'])) ?>
-                    </span>
+                <div class="fs-3 fw-bold mb-2"><?= F::e(F::rupiah($layanan['harga'])) ?></div>
+
+                <div class="d-flex flex-wrap gap-3 text-muted mb-4">
+                    <span><i class="bi bi-clock"></i>
+                        Durasi sesi: <?= F::e(F::durasi($layanan['estimasi_durasi_menit'])) ?></span>
+                    <span><i class="bi bi-hourglass-split"></i>
+                        Hasil siap: <?= F::e(F::hari($layanan['estimasi_hasil_hari'])) ?></span>
+                    <?php if (!empty($layanan['maks_orang'])): ?>
+                        <span><i class="bi bi-people"></i>
+                            <?= F::e(F::maksOrang($layanan['maks_orang'])) ?></span>
+                    <?php endif; ?>
                 </div>
+
+                <?php if (!empty($layanan['deskripsi'])): ?>
+                    <p class="mb-4"><?= nl2br(F::e($layanan['deskripsi'])) ?></p>
+                <?php endif; ?>
 
                 <h2 class="h6 text-uppercase text-muted mb-3">Yang Anda Dapatkan</h2>
 
                 <?php if (empty($poin)): ?>
-                    <p class="text-muted">Belum ada deskripsi untuk layanan ini.</p>
-                <?php elseif (count($poin) === 1): ?>
-                    <p><?= F::e($poin[0]) ?></p>
+                    <p class="text-muted">Belum ada rincian hasil untuk layanan ini.</p>
                 <?php else: ?>
                     <ul class="list-unstyled mb-4">
                         <?php foreach ($poin as $p): ?>
                             <li class="d-flex gap-2 mb-2">
                                 <i class="bi bi-check-circle text-success"></i>
                                 <span><?= F::e($p) ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+
+                <?php if (!empty($addons)): ?>
+                    <h2 class="h6 text-uppercase text-muted mb-3">Add-on Tersedia</h2>
+                    <ul class="list-group mb-4">
+                        <?php foreach ($addons as $a): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-start gap-3">
+                                <div>
+                                    <div class="fw-semibold"><?= F::e($a['nama']) ?></div>
+                                    <?php if (!empty($a['deskripsi'])): ?>
+                                        <div class="small text-muted"><?= F::e($a['deskripsi']) ?></div>
+                                    <?php endif; ?>
+                                    <?php if ((int) $a['tambahan_durasi_menit'] > 0): ?>
+                                        <div class="small text-muted">
+                                            +<?= (int) $a['tambahan_durasi_menit'] ?> menit sesi
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <span class="text-nowrap fw-semibold">+ <?= F::e(F::rupiah($a['harga'])) ?></span>
                             </li>
                         <?php endforeach; ?>
                     </ul>
