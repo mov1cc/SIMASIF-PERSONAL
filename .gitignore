@@ -46,3 +46,4 @@ node_modules/
 # Gambar layanan yang diunggah
 /public/assets/uploads/layanan/*
 !/public/assets/uploads/layanan/.gitkeep
+!/public/assets/uploads/layanan/.htaccess

@@ -335,6 +335,12 @@ ob_start();
 
         <article class="sf-panel sf-card <?= $isActive ? '' : 'is-off' ?>">
 
+            <?php if (!empty($row['cover_path'])): ?>
+                <img src="<?= F::e(F::urlGambar($row['cover_path'])) ?>"
+                     alt="<?= F::e($row['nama']) ?>"
+                     class="sf-cover" loading="lazy">
+            <?php endif; ?>
+
             <div class="sf-card-head">
 
                 <div>
@@ -499,6 +505,18 @@ ob_start();
 
 
             <div class="sf-card-actions">
+
+                <a href="/pegawai/layanan/addon?layanan_id=<?= (int) $row['id'] ?>"
+                   class="sf-btn sf-btn-light">
+                    <i class="bi bi-plus-square"></i>
+                    Add-on (<?= (int) $row['jumlah_addon'] ?>)
+                </a>
+
+                <a href="/pegawai/layanan/gambar?layanan_id=<?= (int) $row['id'] ?>"
+                   class="sf-btn sf-btn-light">
+                    <i class="bi bi-images"></i>
+                    Galeri (<?= (int) $row['jumlah_gambar'] ?>)
+                </a>
 
                 <form action="/pegawai/layanan/delete"
                       method="POST"

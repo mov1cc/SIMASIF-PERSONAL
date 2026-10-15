@@ -6,16 +6,19 @@ use App\Core\Controller;
 use App\Core\Request;
 use App\Models\Layanan;
 use App\Models\AddonLayanan;
+use App\Models\LayananGambar;
 
 class LayananController extends Controller
 {
     private Layanan $layanan;
     private AddonLayanan $addon;
+    private LayananGambar $gambar;
 
     public function __construct()
     {
         $this->layanan = new Layanan();
         $this->addon   = new AddonLayanan();
+        $this->gambar  = new LayananGambar();
     }
 
     /**
@@ -49,6 +52,7 @@ class LayananController extends Controller
             'title'   => $row['nama'],
             'layanan' => $row,
             'addons'  => $this->addon->findActiveByLayanan($id),
+            'gambar'  => $this->gambar->allByLayanan($id),
         ]);
     }
 }

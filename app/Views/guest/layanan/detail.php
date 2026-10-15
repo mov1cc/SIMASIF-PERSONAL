@@ -3,6 +3,7 @@ use App\Helpers\FormatHelper as F;
 
 /** @var array $layanan */
 /** @var array $addons */
+/** @var array $gambar */
 
 $title = $layanan['nama'];
 $poin  = F::poin($layanan['deliverables'] ?? null);
@@ -20,6 +21,39 @@ ob_start();
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card shadow-sm">
+            <?php
+                // Cover dulu; kalau belum ada yang ditandai cover, pakai gambar pertama
+                $cover = $gambar[0] ?? null;
+                foreach ($gambar as $g) {
+                if (F::bool($g['is_cover'])) {
+                $cover = $g;
+                break;
+                }
+            }
+            ?>
+
+            <?php if ($cover !== null): ?>
+                <a href="<?= F::e(F::urlGambar($cover['path_file'])) ?>" target="_blank" rel="noopener">
+                <img src="<?= F::e(F::urlGambar($cover['path_file'])) ?>"
+                     alt="<?= F::e($cover['keterangan'] ?? $layanan['nama']) ?>"
+                     class="card-img-top" style="max-height:420px;object-fit:cover">
+                </a>
+
+            <?php if (count($gambar) > 1): ?>
+                <div class="row g-2 px-4 pt-3">
+                    <?php foreach ($gambar as $g): ?>
+                        <div class="col-3 col-md-2">
+                            <a href="<?= F::e(F::urlGambar($g['path_file'])) ?>" target="_blank" rel="noopener">
+                                <img src="<?= F::e(F::urlGambar($g['path_file'])) ?>"
+                                     alt="<?= F::e($g['keterangan'] ?? $layanan['nama']) ?>"
+                                     class="img-fluid rounded"
+                                     style="aspect-ratio:1/1;object-fit:cover;width:100%" loading="lazy">
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
             <div class="card-body p-4">
 
                 <h1 class="h3 fw-bold mb-2"><?= F::e($layanan['nama']) ?></h1>

@@ -9,14 +9,18 @@ use App\Helpers\CsrfHelper;
 use App\Helpers\ValidationHelper;
 use App\Models\Layanan;
 use PDOException;
+use App\Models\LayananGambar;
+use App\Services\UploadService;
 
 class LayananController extends Controller
 {
     private Layanan $layanan;
+    private LayananGambar $gambar;
 
     public function __construct()
     {
         $this->layanan = new Layanan();
+        $this->gambar = new LayananGambar();
     }
 
         /**
@@ -107,15 +111,27 @@ class LayananController extends Controller
     /**
      * POST /pegawai/layanan/delete
      */
-    public function destroy(): void
+        public function destroy(): void
     {
         $this->verifyCsrf();
 
         $id = (int) Request::post('id', 0);
         $this->findOrFail($id);
 
+        // Baris layanan_gambar ikut terhapus oleh ON DELETE CASCADE,
+        // jadi daftar file dicatat dulu untuk dibersihkan dari disk.
+        $files = $this->gambar->allByLayanan($id);
+
         try {
             $this->layanan->delete($id);
+
+            foreach ($files as $f) {
+                UploadService::hapus(
+                    BASE_PATH . '/public/' . LayananGambar::DIR_RELATIF,
+                    $f['nama_file']
+                );
+            }
+
             Session::flash('success', 'Layanan berhasil dihapus.');
         } catch (PDOException $e) {
             // 23001 = restrict_violation (ON DELETE RESTRICT)

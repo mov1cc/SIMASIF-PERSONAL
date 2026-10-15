@@ -49,6 +49,12 @@ ob_start();
 
                 <div class="card h-100 shadow-sm">
 
+                    <?php if (!empty($row['cover_path'])): ?>
+                        <img src="<?= F::e(F::urlGambar($row['cover_path'])) ?>"
+                             alt="<?= F::e($row['nama']) ?>"
+                             class="card-img-top" style="height:200px;object-fit:cover" loading="lazy">
+                    <?php endif; ?>
+
                     <div class="card-body d-flex flex-column">
 
 

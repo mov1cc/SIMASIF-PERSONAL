@@ -187,4 +187,12 @@ class FormatHelper
 
         return 'https://wa.me/' . $digits;
     }
+
+    /** "assets/uploads/layanan/abc.jpg" -> "/assets/uploads/layanan/abc.jpg"; kosong -> "" */
+    public static function urlGambar(?string $path): string
+    {
+        $path = trim((string) $path);
+
+        return $path === '' ? '' : '/' . ltrim($path, '/');
+    }
 }

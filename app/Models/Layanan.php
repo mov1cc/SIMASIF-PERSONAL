@@ -9,22 +9,38 @@ class Layanan extends Model
     protected string $table = 'layanan';
 
     /**
-     * Semua layanan (untuk halaman pegawai): aktif dulu, lalu urut nama
+     * Semua layanan (untuk halaman pegawai): aktif dulu, lalu urut nama.
+     * Termasuk jumlah add-on, jumlah gambar, dan path cover.
      */
     public function all(): array
     {
         return $this->query(
-            "SELECT * FROM layanan ORDER BY is_active DESC, nama ASC"
+            "SELECT l.*,
+                    (SELECT COUNT(*) FROM addon_layanan a
+                      WHERE a.layanan_id = l.id)  AS jumlah_addon,
+                    (SELECT COUNT(*) FROM layanan_gambar g
+                      WHERE g.layanan_id = l.id)  AS jumlah_gambar,
+                    (SELECT g.path_file FROM layanan_gambar g
+                      WHERE g.layanan_id = l.id AND g.is_cover
+                      LIMIT 1)                    AS cover_path
+               FROM layanan l
+              ORDER BY l.is_active DESC, l.nama ASC"
         );
     }
 
     /**
-     * Hanya layanan aktif (dipakai halaman publik di Tahap 6)
+     * Hanya layanan aktif (halaman publik), lengkap dengan path cover.
      */
     public function findActive(): array
     {
         return $this->query(
-            "SELECT * FROM layanan WHERE is_active = TRUE ORDER BY nama ASC"
+            "SELECT l.*,
+                    (SELECT g.path_file FROM layanan_gambar g
+                      WHERE g.layanan_id = l.id AND g.is_cover
+                      LIMIT 1) AS cover_path
+               FROM layanan l
+              WHERE l.is_active = TRUE
+              ORDER BY l.nama ASC"
         );
     }
 

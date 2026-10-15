@@ -20,6 +20,21 @@ $router->post('/pegawai/layanan/update',  'Pegawai\LayananController@update',  $
 $router->post('/pegawai/layanan/delete',  'Pegawai\LayananController@destroy', $pegawai);
 $router->post('/pegawai/layanan/toggle',  'Pegawai\LayananController@toggle',  $pegawai);
 
+// Add-on layanan
+$router->get('/pegawai/layanan/addon',         'Pegawai\AddonLayananController@index',   $pegawai);
+$router->get('/pegawai/layanan/addon/edit',    'Pegawai\AddonLayananController@edit',    $pegawai);
+$router->post('/pegawai/layanan/addon/store',  'Pegawai\AddonLayananController@store',   $pegawai);
+$router->post('/pegawai/layanan/addon/update', 'Pegawai\AddonLayananController@update',  $pegawai);
+$router->post('/pegawai/layanan/addon/delete', 'Pegawai\AddonLayananController@destroy', $pegawai);
+$router->post('/pegawai/layanan/addon/toggle', 'Pegawai\AddonLayananController@toggle',  $pegawai);
+
+// Galeri gambar layanan
+$router->get('/pegawai/layanan/gambar',         'Pegawai\LayananGambarController@index',   $pegawai);
+$router->post('/pegawai/layanan/gambar/upload', 'Pegawai\LayananGambarController@upload',  $pegawai);
+$router->post('/pegawai/layanan/gambar/cover',  'Pegawai\LayananGambarController@cover',   $pegawai);
+$router->post('/pegawai/layanan/gambar/update', 'Pegawai\LayananGambarController@update',  $pegawai);
+$router->post('/pegawai/layanan/gambar/delete', 'Pegawai\LayananGambarController@destroy', $pegawai);
+
 // Pelanggan (Tahap 5)
 $router->get('/pegawai/pelanggan',          'Pegawai\PelangganController@index',   $pegawai);
 $router->get('/pegawai/pelanggan/create',   'Pegawai\PelangganController@create',  $pegawai);
